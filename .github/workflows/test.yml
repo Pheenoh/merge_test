@@ -45,6 +45,7 @@ jobs:
             echo "::set-output name=only_target_file_modified::true"
         else
             echo "More than the target file was modified."
+            echo "Modified files: $MODIFIED_FILES"
             echo "::set-output name=only_target_file_modified::false"
             exit 0 # No need to check further if more than the target file is modified
         fi
@@ -53,6 +54,7 @@ jobs:
         CHANGES=$(git diff $PR_BASE_SHA $PR_HEAD_SHA -- $FILE)
         if echo "$CHANGES" | grep -v '^+' | grep -q '^[-]'; then
             echo "Changes to the file are not only additions."
+            echo "Changes: $CHANGES"
             echo "::set-output name=only_additions::false"
         else
             echo "Changes to the file are only additions."
