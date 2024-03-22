@@ -11,3 +11,5 @@
   permissions: read-only
 - ghidraName: pheenoh2
   permissions: read-only2
+- ghidraName: pheenoh6
+  permissions: read-only
