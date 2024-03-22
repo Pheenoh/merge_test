@@ -13,3 +13,5 @@
   permissions: read-only2
 - ghidraName: blah
   permissions: read-only
+- ghidraName: blah2
+  permissions: read-only
