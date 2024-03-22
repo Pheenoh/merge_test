@@ -59,15 +59,16 @@ jobs:
             echo "::set-output name=only_additions::true"
         fi
 
-        # Check for forbidden words
+        # Check for forbidden words in added lines only
         FORBIDDEN_FOUND=false
+        ADDED_LINES=$(git diff $PR_BASE_SHA $PR_HEAD_SHA -- $FILE | grep '^+' | grep -v '^\+\+\+' )
         for word in "${FORBIDDEN_WORDS[@]}"; do
-        if echo "$CHANGES" | grep -qi $word; then
-            echo "Forbidden word '$word' found."
+        if echo "$ADDED_LINES" | grep -qi $word; then
             FORBIDDEN_FOUND=true
             break
         fi
         done
+
 
         if [ "$FORBIDDEN_FOUND" = true ]; then
             echo "Forbidden words found."
