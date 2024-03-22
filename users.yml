@@ -5,3 +5,5 @@
   permissions: read-only
 - ghidraName: pheenoh
   permissions: read-only
+- ghidraName: pheenoh
+  permissions: read-only
