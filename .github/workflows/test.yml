@@ -22,6 +22,7 @@ jobs:
             echo "Workflow files were modified."
             echo "::set-output name=workflow_modified::true"
         else
+            echo "Workflow files were not modified."
             echo "::set-output name=workflow_modified::false"
         fi
     - name: Halt workflow if it was modified
@@ -37,11 +38,13 @@ jobs:
         PR_BASE_SHA=$(jq -r ".pull_request.base.sha" $GITHUB_EVENT_PATH)
         PR_HEAD_SHA=$(jq -r ".pull_request.head.sha" $GITHUB_EVENT_PATH)
         
-        # Check if only the target file is modified
+        # Check if only the target file was modified
         MODIFIED_FILES=$(git diff --name-only $PR_BASE_SHA $PR_HEAD_SHA)
         if [ "$MODIFIED_FILES" == "$FILE" ]; then
+            echo "Only the target file was modified."
             echo "::set-output name=only_target_file_modified::true"
         else
+            echo "More than the target file was modified."
             echo "::set-output name=only_target_file_modified::false"
             exit 0 # No need to check further if more than the target file is modified
         fi
@@ -49,8 +52,10 @@ jobs:
         # Check if the changes to the file are only additions and search for forbidden words
         CHANGES=$(git diff $PR_BASE_SHA $PR_HEAD_SHA -- $FILE)
         if echo "$CHANGES" | grep -v '^+' | grep -q '^[-]'; then
+            echo "Changes to the file are not only additions."
             echo "::set-output name=only_additions::false"
         else
+            echo "Changes to the file are only additions."
             echo "::set-output name=only_additions::true"
         fi
 
@@ -58,14 +63,17 @@ jobs:
         FORBIDDEN_FOUND=false
         for word in "${FORBIDDEN_WORDS[@]}"; do
         if echo "$CHANGES" | grep -qi $word; then
+            echo "Forbidden word '$word' found."
             FORBIDDEN_FOUND=true
             break
         fi
         done
 
         if [ "$FORBIDDEN_FOUND" = true ]; then
+            echo "Forbidden words found."
             echo "::set-output name=forbidden_words_found::true"
         else
+            echo "No forbidden words found."
             echo "::set-output name=forbidden_words_found::false"
         fi
     - name: Merge PR
